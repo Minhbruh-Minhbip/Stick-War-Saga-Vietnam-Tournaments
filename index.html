@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stick War: Saga Vietnam Tournaments</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Stick War: Saga Vietnam Tournaments</h1>
+    </header>
+
+    <div class="container">
+        <main id="main-page">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Tìm kiếm giải đấu...">
+
+            <h2 class="section-title">🔴 Live Tournaments 🔴</h2>
+            <div id="current-tournaments" class="tournament-list">
+            </div>
+
+            <h2 class="section-title">📜 History 📜</h2>
+            <div id="history-tournaments" class="tournament-list">
+            </div>
+        </main>
+
+        <main id="details-page" class="hidden">
+            <button class="btn" onclick="goBack()">⬅ Back</button>
+            <br><br>
+            
+            <div class="card" style="cursor: default;">
+                <h2 id="det-name" class="card-title">Tournament Name</h2>
+                <div class="card-info">
+                    <p>📅 Date: <span id="det-date"></span></p>
+                    <p>👑 Host: <span id="det-host"></span> | 💰 Sponsor: <span id="det-sponsor"></span></p>
+                    <p>🕔 Game Version: <span id="det-version"></span></p>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('results')">Results</button>
+                <button class="tab-btn" onclick="switchTab('gamers')">Gamers Info</button>
+            </div>
+
+            <div id="tab-results" class="tab-content active">
+            </div>
+
+            <div id="tab-gamers" class="tab-content">
+                <div class="card" style="cursor: default;">
+                    <p>Đang cập nhật...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
