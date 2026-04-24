@@ -9,6 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bracket/0.11.1/jquery.bracket.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* CSS cho các Sub-Tabs mới bên trong mỗi Vòng đấu */
+        .main-tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid var(--bg-secondary); padding-bottom: 10px; }
+        .main-tab-btn { background: transparent; color: var(--text-muted); border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: var(--radius-sm); transition: var(--transition); }
+        .main-tab-btn.active { background: var(--accent); color: white; }
+        .main-tab-btn:hover:not(.active) { background: var(--bg-tertiary); }
+    </style>
 </head>
 <body>
 

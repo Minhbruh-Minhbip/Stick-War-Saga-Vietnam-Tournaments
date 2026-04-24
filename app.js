@@ -139,8 +139,23 @@ window.openViewerStage = function(index) {
     const contentBox = $('#viewer-stage-content');
     contentBox.empty();
 
+    // Dựng 2 tab con (DETAILS và REPLAY)
+    let stageTabsHtml = `
+        <div class="main-tabs" style="margin-top: 15px;">
+            <button class="main-tab-btn active" id="btn-viewer-details" onclick="switchViewerStageTab('details')">Details</button>
+            <button class="main-tab-btn" id="btn-viewer-replay" onclick="switchViewerStageTab('replay')">Replay links</button>
+        </div>
+        <div id="viewer-sub-details"></div>
+        <div id="viewer-sub-replay" class="hidden"></div>
+    `;
+    contentBox.append(stageTabsHtml);
+
+    const detailsBox = $('#viewer-sub-details');
+    const replayBox = $('#viewer-sub-replay');
+
+    // 1. RENDER VÀO TAB DETAILS
     if (stage.format.includes('Elimination')) {
-        contentBox.append(`<div id="viewer-bracket" style="overflow-x: auto; padding: 20px; background: var(--bg-secondary); border-radius: var(--radius);"></div>`);
+        detailsBox.append(`<div id="viewer-bracket" style="overflow-x: auto; padding: 20px; background: var(--bg-secondary); border-radius: var(--radius);"></div>`);
         
         let bracketData = stage.data || { teams:[["--", "--"]], results: [[[[null, null]]]] };
 
@@ -183,40 +198,86 @@ window.openViewerStage = function(index) {
         let groupsHtml = `<h3 style="margin-bottom: 15px; color: var(--text-main);">Kết quả ${stage.name}</h3>`;
 
         if (!stage.data || stage.data.length === 0) {
-            contentBox.append(groupsHtml + "<p style='color: var(--text-muted);'>Chưa có dữ liệu bảng đấu.</p>");
-            return;
-        }
+            detailsBox.append(groupsHtml + "<p style='color: var(--text-muted);'>Chưa có dữ liệu bảng đấu.</p>");
+        } else {
+            stage.data.forEach(group => {
+                groupsHtml += `
+                <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--accent); cursor: default;">
+                    <h3 style="color: var(--accent); margin-bottom: 10px;">${group.name}</h3>
+                    <div class="group-container">
+                        <table class="custom-table">
+                            <thead><tr><th>Team</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
+                            <tbody>`;
+                
+                let sortedTeams = group.teams.sort((a, b) => b.pts - a.pts);
+                sortedTeams.forEach(team => {
+                    groupsHtml += `<tr><td><strong>${team.name}</strong></td><td>${team.w}</td><td>${team.l}</td><td><strong style="color: var(--accent);">${team.pts}</strong></td></tr>`;
+                });
 
-        stage.data.forEach(group => {
-            groupsHtml += `
-            <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--accent); cursor: default;">
-                <h3 style="color: var(--accent); margin-bottom: 10px;">${group.name}</h3>
-                <div class="group-container">
-                    <table class="custom-table">
-                        <thead><tr><th>Team</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
-                        <tbody>`;
-            
-            let sortedTeams = group.teams.sort((a, b) => b.pts - a.pts);
-            sortedTeams.forEach(team => {
-                groupsHtml += `<tr><td><strong>${team.name}</strong></td><td>${team.w}</td><td>${team.l}</td><td><strong style="color: var(--accent);">${team.pts}</strong></td></tr>`;
+                groupsHtml += `</tbody></table>
+                        <div class="match-list">
+                            <h4 style="margin-bottom: 10px;">Lịch sử đối đầu</h4>`;
+                
+                if (group.matches && group.matches.length > 0) {
+                    group.matches.forEach(match => {
+                        groupsHtml += `<div class="match-row"><span class="match-team">${match.team1}</span><span class="match-score">${match.score1} - ${match.score2}</span><span class="match-team">${match.team2}</span></div>`;
+                    });
+                } else {
+                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted);">Chưa có trận đấu nào diễn ra.</p>`;
+                }
+
+                groupsHtml += `</div></div></div>`;
             });
 
-            groupsHtml += `</tbody></table>
-                    <div class="match-list">
-                        <h4 style="margin-bottom: 10px;">Lịch sử đối đầu</h4>`;
-            
-            if (group.matches && group.matches.length > 0) {
-                group.matches.forEach(match => {
-                    groupsHtml += `<div class="match-row"><span class="match-team">${match.team1}</span><span class="match-score">${match.score1} - ${match.score2}</span><span class="match-team">${match.team2}</span></div>`;
-                });
-            } else {
-                groupsHtml += `<p style="font-size: 13px; color: var(--text-muted);">Chưa có trận đấu nào diễn ra.</p>`;
-            }
+            detailsBox.append(groupsHtml);
+        }
+    }
 
-            groupsHtml += `</div></div></div>`;
+    // 2. RENDER VÀO TAB REPLAY (Đã sửa nút Xem Video -> Copy Link)
+    if (!stage.replays || stage.replays.length === 0) {
+        replayBox.append('<p style="color: var(--text-muted); text-align: center; padding: 20px;">Chưa có video replay nào cho vòng đấu này.</p>');
+    } else {
+        let replaysHtml = `<div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px;">`;
+        stage.replays.forEach(r => {
+            // Xử lý cẩn thận dấu nháy đơn và kép để tránh lỗi khi truyền vào hàm onclick
+            let safeLink = r.link ? r.link.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
+            replaysHtml += `
+                <div class="card" style="border-left: 3px solid var(--accent); padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: default;">
+                    <div style="font-weight: bold; color: var(--text-main); font-size: 16px;">${r.name || 'Trận đấu không tên'}</div>
+                    <button class="btn" style="padding: 5px 15px; font-size: 14px;" onclick="copyReplayLink('${safeLink}', this)">Copy Link</button>
+                </div>
+            `;
         });
+        replaysHtml += `</div>`;
+        replayBox.append(replaysHtml);
+    }
+}
 
-        contentBox.append(groupsHtml);
+// Bổ sung hàm Copy Link
+window.copyReplayLink = function(link, btnElement) {
+    if (!link) return;
+    navigator.clipboard.writeText(link).then(() => {
+        const originalText = $(btnElement).text();
+        $(btnElement).text('Đã Copy!');
+        setTimeout(() => {
+            $(btnElement).text(originalText);
+        }, 2000);
+    }).catch(err => {
+        console.error('Không thể copy', err);
+    });
+}
+
+// Bổ sung hàm chuyển Tab ở chế độ Viewer
+window.switchViewerStageTab = function(tabName) {
+    $('#btn-viewer-details, #btn-viewer-replay').removeClass('active');
+    $('#viewer-sub-details, #viewer-sub-replay').addClass('hidden');
+    
+    if(tabName === 'details') {
+        $('#btn-viewer-details').addClass('active');
+        $('#viewer-sub-details').removeClass('hidden');
+    } else {
+        $('#btn-viewer-replay').addClass('active');
+        $('#viewer-sub-replay').removeClass('hidden');
     }
 }
 
@@ -224,6 +285,7 @@ function goBack() {
     $('#details-page').addClass('hidden');
     $('#main-page').removeClass('hidden');
 }
+
 function switchTab(tabId) {
     $('.tab-btn').removeClass('active');
     $('.tab-content').removeClass('active');
