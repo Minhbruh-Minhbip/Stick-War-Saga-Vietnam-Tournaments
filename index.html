@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* CSS cho các Sub-Tabs mới bên trong mỗi Vòng đấu */
         .main-tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid var(--bg-secondary); padding-bottom: 10px; }
         .main-tab-btn { background: transparent; color: var(--text-muted); border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: var(--radius-sm); transition: var(--transition); }
         .main-tab-btn.active { background: var(--accent); color: white; }
@@ -27,6 +26,10 @@
     <div class="container">
         <main id="main-page">
             <input type="text" id="searchInput" class="search-bar" placeholder="Tìm kiếm giải đấu...">
+
+            <h2 class="section-title">🟢 Upcoming Tournaments 🟢</h2>
+            <div id="upcoming-tournaments" class="tournament-list">
+            </div>
 
             <h2 class="section-title">🔴 Live Tournaments 🔴</h2>
             <div id="current-tournaments" class="tournament-list">
@@ -52,7 +55,7 @@
 
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('results')">Results</button>
-                <button class="tab-btn" onclick="switchTab('gamers')">Gamers Info</button>
+                <button class="tab-btn" onclick="switchTab('gamers')">Players</button>
             </div>
 
             <div id="tab-results" class="tab-content active">
@@ -60,7 +63,7 @@
 
             <div id="tab-gamers" class="tab-content">
                 <div class="card" style="cursor: default;">
-                    <p>Đang cập nhật...</p>
+                    <p>Updating...</p>
                 </div>
             </div>
         </main>
