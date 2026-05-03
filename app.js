@@ -21,14 +21,17 @@ async function fetchTournaments() {
 
 function renderTournaments(data) {
     $('#current-tournaments').empty();
+    $('#upcoming-tournaments').empty();
     $('#history-tournaments').empty();
 
     data.forEach(t => {
         const isLive = t.status === 'live';
+        const isUpcoming = t.status === 'upcoming';
         const liveBadge = isLive ? `<span class="badge-live">LIVE</span>` : '';
+        const upcomingBadge = isUpcoming ? `<span class="badge-upcoming">Upcoming</span>` : '';
         const html = `
             <div class="card" onclick="viewTournament(${t.id})">
-                <div class="card-title">${t.name} ${liveBadge}</div>
+                <div class="card-title">${t.name} ${liveBadge} ${upcomingBadge}</div>
                 <div class="card-info">
                     🕒 ${t.start_date || '?'} - ${t.end_date || '?'} | 👑 Host: ${t.host || 'Trống'}
                 </div>
@@ -36,6 +39,8 @@ function renderTournaments(data) {
         `;
         if (isLive) {
             $('#current-tournaments').append(html);
+        } else if (isUpcoming) {
+            $('#upcoming-tournaments').append(html);
         } else {
             $('#history-tournaments').append(html);
         }
@@ -139,7 +144,6 @@ window.openViewerStage = function(index) {
     const contentBox = $('#viewer-stage-content');
     contentBox.empty();
 
-    // Dựng 2 tab con (DETAILS và REPLAY)
     let stageTabsHtml = `
         <div class="main-tabs" style="margin-top: 15px;">
             <button class="main-tab-btn active" id="btn-viewer-details" onclick="switchViewerStageTab('details')">Details</button>
@@ -153,7 +157,6 @@ window.openViewerStage = function(index) {
     const detailsBox = $('#viewer-sub-details');
     const replayBox = $('#viewer-sub-replay');
 
-    // 1. RENDER VÀO TAB DETAILS
     if (stage.format.includes('Elimination')) {
         detailsBox.append(`<div id="viewer-bracket" style="overflow-x: auto; padding: 20px; background: var(--bg-secondary); border-radius: var(--radius);"></div>`);
         
@@ -233,41 +236,62 @@ window.openViewerStage = function(index) {
         }
     }
 
-    // 2. RENDER VÀO TAB REPLAY (Đã sửa nút Xem Video -> Copy Link)
     if (!stage.replays || stage.replays.length === 0) {
         replayBox.append('<p style="color: var(--text-muted); text-align: center; padding: 20px;">Chưa có video replay nào cho vòng đấu này.</p>');
     } else {
-        let replaysHtml = `<div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px;">`;
-        stage.replays.forEach(r => {
-            // Xử lý cẩn thận dấu nháy đơn và kép để tránh lỗi khi truyền vào hàm onclick
-            let safeLink = r.link ? r.link.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
+        let replaysHtml = `<div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">`;
+        
+        stage.replays.forEach(match => {
+            let gamesHtml = '';
+            if (match.games && match.games.length > 0) {
+                match.games.forEach((link, idx) => {
+                    let safeLink = link ? link.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
+                    gamesHtml += `
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #333;">
+                            <span style="font-size: 13px; color: var(--text-muted); width: 60px; font-weight: bold;">Match ${idx + 1}:</span>
+                            <input type="text" value="${safeLink}" readonly style="flex: 1; background: transparent; border: none; color: #5865F2; text-decoration: underline; font-size: 13px; outline: none; cursor: text;">
+                            <button class="btn" style="background: #4752c4; color: white; padding: 4px 12px; font-size: 12px; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s;" onclick="copyReplayLink('${safeLink}', this)">Copy Link</button>
+                        </div>
+                    `;
+                });
+            } else {
+                gamesHtml = `<p style="font-size: 13px; color: var(--text-muted); text-align: center; margin: 0;">Đang cập nhật link replay...</p>`;
+            }
+
             replaysHtml += `
-                <div class="card" style="border-left: 3px solid var(--accent); padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: default;">
-                    <div style="font-weight: bold; color: var(--text-main); font-size: 16px;">${r.name || 'Trận đấu không tên'}</div>
-                    <button class="btn" style="padding: 5px 15px; font-size: 14px;" onclick="copyReplayLink('${safeLink}', this)">Copy Link</button>
+                <div style="background: var(--bg-tertiary); border: 1px solid var(--bg-secondary); border-radius: var(--radius-sm); overflow: hidden; cursor: default;">
+                    <div style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 12px; border-bottom: 2px solid var(--accent); gap: 15px;">
+                        <div style="flex: 1; text-align: right; font-weight: bold; font-size: 16px; color: var(--text-main);">${match.team1 || 'Player 1'}</div>
+                        <div style="background: var(--bg-secondary); border: 1px solid #444; color: var(--accent); font-weight: bold; font-size: 20px; padding: 5px 15px; border-radius: 4px; text-align: center; min-width: 80px;">
+                            ${match.score1 || 0} - ${match.score2 || 0}
+                        </div>
+                        <div style="flex: 1; text-align: left; font-weight: bold; font-size: 16px; color: var(--text-main);">${match.team2 || 'Player 2'}</div>
+                    </div>
+                    <div style="padding: 10px 15px; background: rgba(0,0,0,0.1);">
+                        ${gamesHtml}
+                    </div>
                 </div>
             `;
         });
+        
         replaysHtml += `</div>`;
         replayBox.append(replaysHtml);
     }
 }
 
-// Bổ sung hàm Copy Link
 window.copyReplayLink = function(link, btnElement) {
     if (!link) return;
     navigator.clipboard.writeText(link).then(() => {
         const originalText = $(btnElement).text();
-        $(btnElement).text('Đã Copy!');
+        $(btnElement).text('Copied!').css('background-color', '#2ecc71');
         setTimeout(() => {
-            $(btnElement).text(originalText);
+            $(btnElement).text(originalText).css('background-color', '#4752c4');
         }, 2000);
     }).catch(err => {
-        console.error('Không thể copy', err);
+        console.error('Could not copy', err);
     });
 }
 
-// Bổ sung hàm chuyển Tab ở chế độ Viewer
 window.switchViewerStageTab = function(tabName) {
     $('#btn-viewer-details, #btn-viewer-replay').removeClass('active');
     $('#viewer-sub-details, #viewer-sub-replay').addClass('hidden');
