@@ -5,41 +5,33 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let tournaments = [];
 
 $(document).ready(async function() {
-    // 1. CHẠY KIỂM TRA TRÌNH DUYỆT IN-APP NGAY KHI LOAD VÀ ĐIỀU HƯỚNG
     checkAndRedirectInAppBrowser();
-
-    // 2. TIÊM CSS TỐI ƯU HÓA MOBILE UI/UX
     injectMobileUXStyles();
 
     await fetchTournaments();
     setupSearch();
 });
 
-// ==========================================
-// TÍNH NĂNG MỚI: CHUYỂN HƯỚNG IN-APP BROWSER
-// ==========================================
 function checkAndRedirectInAppBrowser() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
-    // Nhận diện Zalo, Facebook, Messenger, Discord, Instagram, TikTok...
     const inAppRegex = /(FB_IAB|FB4A|FBAN|FBAV|IG_CPA|Instagram|Zalo|Discord|Line|TikTok|Snapchat)/i;
 
     if (inAppRegex.test(ua)) {
         const targetUrl = 'https://minhbruh-minhbip.github.io/Stick-War-Saga-Vietnam-Tournaments/';
         
-        // Tạo màn hình Overlay đếm ngược chặn thao tác
         const overlay = $(`
             <div id="inapp-warning" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #313338; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; box-sizing: border-box;">
                 <div style="background: rgba(218, 55, 60, 0.2); padding: 15px; border-radius: 50%; margin-bottom: 20px;">
                     <span style="font-size: 40px;">⚠️</span>
                 </div>
-                <h2 style="color: #DA373C; margin-bottom: 15px; font-size: 24px;">Trình duyệt không tối ưu!</h2>
+                <h2 style="color: #DA373C; margin-bottom: 15px; font-size: 24px;">The browser is not optimized.!</h2>
                 <p style="margin-bottom: 20px; font-size: 16px; line-height: 1.5; color: #B5BAC1;">
-                    Bạn đang mở trang web bên trong ứng dụng (Zalo/Facebook/Discord...).<br>
-                    Để nhánh đấu và các video Replay hiển thị mượt mà nhất, hệ thống sẽ mở bằng trình duyệt gốc (Chrome/Safari).
+                    You are opening the website inside an app (Zalo/Facebook/Discord...).<br>
+                    To ensure the website runs as smoothly as possible, the system will open it in the native browser (Chrome/Safari).
                 </p>
                 <div style="font-size: 60px; font-weight: bold; color: #5865F2; margin-bottom: 20px;" id="countdown">5</div>
                 <p style="font-size: 14px; color: #888; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                    💡 Lời khuyên: Nếu điện thoại không tự chuyển, vui lòng nhấn vào biểu tượng <b>ba chấm (⋮)</b> hoặc <b>mũi tên</b> ở góc màn hình và chọn <br><b>"Mở bằng trình duyệt" (Open in Browser)</b>.
+                    💡 Tip: If the phone doesn't switch automatically, please tap <b>the three dots (⋮)</b> or <b>arrow icon</b>in the corner of the screen and select <br><b>"Mở bằng trình duyệt" (Open in Browser)</b>.
                 </p>
             </div>
         `);
@@ -52,11 +44,9 @@ function checkAndRedirectInAppBrowser() {
             if (timeLeft <= 0) {
                 clearInterval(timer);
                 
-                // Cố gắng dùng Intent để ép mở Google Chrome trên Android
                 if (/android/i.test(ua)) {
                     window.location.href = "intent://minhbruh-minhbip.github.io/Stick-War-Saga-Vietnam-Tournaments/#Intent;scheme=https;package=com.android.chrome;end";
                 } else {
-                    // Fallback cho iOS và các hệ điều hành khác
                     window.location.href = targetUrl; 
                 }
             }
@@ -64,35 +54,25 @@ function checkAndRedirectInAppBrowser() {
     }
 }
 
-// ==========================================
-// TÍNH NĂNG MỚI: TỐI ƯU MOBILE UX/UI
-// ==========================================
 function injectMobileUXStyles() {
     if ($('#mobile-ux-styles').length === 0) {
         $('head').append(`
             <style id="mobile-ux-styles">
-                /* Làm mượt thanh cuộn ngang cho Bracket và Bảng Xếp Hạng */
                 #viewer-bracket, .group-container {
                     -webkit-overflow-scrolling: touch;
                     scrollbar-width: thin;
                 }
                 
-                /* Tùy chỉnh Scrollbar cho ngầu */
                 ::-webkit-scrollbar { height: 6px; width: 6px; }
                 ::-webkit-scrollbar-thumb { background: #5865F2; border-radius: 10px; }
                 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
 
                 @media (max-width: 768px) {
-                    /* Header & Search Bar */
                     header { flex-direction: column; gap: 15px; padding: 15px !important; text-align: center; }
                     header h1 { font-size: 20px !important; }
                     header div { width: 100%; display: flex; flex-direction: column; gap: 10px; }
                     #searchInput { width: 100% !important; box-sizing: border-box; }
-
-                    /* Nút bấm to ra để dễ chạm bằng ngón tay */
                     .btn, .main-tab-btn, .sub-tab-btn { padding: 12px 15px !important; font-size: 14px !important; }
-                    
-                    /* Tabs trượt ngang thay vì bị rớt dòng */
                     .main-tabs, .sub-tabs { 
                         flex-wrap: nowrap !important; 
                         overflow-x: auto; 
@@ -100,20 +80,12 @@ function injectMobileUXStyles() {
                         padding-bottom: 5px; 
                         justify-content: flex-start !important;
                     }
-
-                    /* Căn chỉnh lại thẻ Giải đấu */
                     .card { padding: 12px !important; margin-bottom: 10px !important; }
                     .card-title { font-size: 16px !important; }
                     .card-info { flex-direction: column; gap: 5px; font-size: 12px !important; }
-
-                    /* Căn chỉnh Gamer Grid thành 1 cột */
                     #tab-gamers > div { grid-template-columns: 1fr !important; }
-
-                    /* Bracket to hơn trên mobile để dễ nhìn */
                     .jQBracket .team { padding: 6px !important; }
                     .jQBracket .score { font-size: 14px !important; padding: 6px !important; }
-
-                    /* Replay Scoreboard Bóng Đá gập lại thành khối dọc trên Mobile */
                     .sb-header-mobile-fix {
                         flex-direction: column !important;
                         gap: 10px !important;
@@ -126,13 +98,10 @@ function injectMobileUXStyles() {
     }
 }
 
-// ==========================================
-// CÁC LOGIC CŨ ĐƯỢC GIỮ NGUYÊN VẸN 100%
-// ==========================================
 async function fetchTournaments() {
     const { data, error } = await supabaseClient.from('tournaments').select('*').order('start_date', { ascending: false });
     if (error) {
-        console.error("Lỗi tải dữ liệu:", error);
+        console.error("Error fetching data:", error);
     } else {
         tournaments = data;
         renderTournaments(tournaments);
@@ -188,13 +157,13 @@ function viewTournament(id) {
     let stagesData = [];
     if (t.formats && t.formats.trim() !== "") {
         try { stagesData = JSON.parse(t.formats); } 
-        catch (e) { console.error("Lỗi phân tích dữ liệu vòng đấu:", e); }
+        catch (e) { console.error("Error parsing tournament stages data:", e); }
     }
 
     let gamersData = [];
     if (t.gamer && t.gamer.trim() !== "") {
         try { gamersData = JSON.parse(t.gamer); } 
-        catch (e) { console.error("Lỗi phân tích dữ liệu gamer:", e); }
+        catch (e) { console.error("Error parsing player data:", e); }
     }
 
     renderViewerResults(stagesData);
@@ -378,7 +347,6 @@ window.openViewerStage = function(index) {
                 gamesHtml = `<p style="font-size: 13px; color: var(--text-muted); text-align: center; margin: 0;">Đang cập nhật link replay...</p>`;
             }
 
-            // Gắn class sb-header-mobile-fix để CSS Mobile bắt được
             replaysHtml += `
                 <div style="background: var(--bg-tertiary); border: 1px solid var(--bg-secondary); border-radius: var(--radius-sm); overflow: hidden; cursor: default;">
                     <div class="sb-header-mobile-fix" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); padding: 12px; border-bottom: 2px solid var(--accent); gap: 15px;">
