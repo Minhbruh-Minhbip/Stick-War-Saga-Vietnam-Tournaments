@@ -7,6 +7,7 @@
     --accent: #5865F2;
     --accent-hover: #4752c4;
     --live-color: #ed4245;
+    --upcoming-color: #07e00e;
     --radius: 12px;
     --radius-sm: 8px;
     --transition: all 0.2s ease-in-out;
@@ -93,6 +94,16 @@ header {
 
 .badge-live {
     background-color: var(--live-color);
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+.badge-upcoming {
+    background-color: var(--upcoming-color);
     color: white;
     font-size: 12px;
     padding: 2px 8px;
