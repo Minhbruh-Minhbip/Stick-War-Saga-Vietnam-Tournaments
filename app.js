@@ -286,7 +286,6 @@ window.openViewerStage = function(index) {
         });
 
     } 
-    // === CẬP NHẬT TẠI ĐÂY: BẢNG GROUP STAGE FLEXBOX / WORD-BREAK CHO VIEWER ===
     else if (stage.format === 'Group Stage') {
         let groupsHtml = `<h3 style="margin-bottom: 15px; color: var(--text-main);">Kết quả ${stage.name}</h3>`;
 
@@ -300,7 +299,6 @@ window.openViewerStage = function(index) {
                     
                     <div class="group-container" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
                         
-                        <!-- Cột Trái: Bảng Xếp Hạng -->
                         <div style="flex: 1 1 45%; min-width: 320px; overflow-x: auto;">
                             <table class="custom-table" style="width: 100%; word-break: break-word;">
                                 <thead>
@@ -308,7 +306,7 @@ window.openViewerStage = function(index) {
                                         <th style="text-align: left;">Team</th>
                                         <th style="width: 50px; text-align: center;">W</th>
                                         <th style="width: 50px; text-align: center;">L</th>
-                                        <th style="width: 50px; text-align: center;">Pts</th>
+                                        <th style="width: 60px; text-align: center;">Pts</th>
                                     </tr>
                                 </thead>
                                 <tbody>`;
@@ -329,8 +327,7 @@ window.openViewerStage = function(index) {
                             </table>
                         </div>
 
-                        <!-- Cột Phải: Lịch Thi Đấu -->
-                        <div class="match-list" style="flex: 1 1 45%; min-width: 320px; background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px;">
+                        <div class="match-list" style="flex: 1 1 45%; min-width: 300px; background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px;">
                             <h4 style="margin: 0 0 15px 0;">History Matches</h4>
                             <div style="max-height: 300px; overflow-y: auto; padding-right: 5px;">`;
                 
