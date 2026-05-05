@@ -286,6 +286,7 @@ window.openViewerStage = function(index) {
         });
 
     } 
+    // === CẬP NHẬT TẠI ĐÂY: BẢNG GROUP STAGE FLEXBOX / WORD-BREAK CHO VIEWER ===
     else if (stage.format === 'Group Stage') {
         let groupsHtml = `<h3 style="margin-bottom: 15px; color: var(--text-main);">Kết quả ${stage.name}</h3>`;
 
@@ -294,31 +295,64 @@ window.openViewerStage = function(index) {
         } else {
             stage.data.forEach(group => {
                 groupsHtml += `
-                <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--accent); cursor: default;">
-                    <h3 style="color: var(--accent); margin-bottom: 10px;">${group.name}</h3>
-                    <div class="group-container">
-                        <table class="custom-table">
-                            <thead><tr><th>Team</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
-                            <tbody>`;
+                <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--accent); cursor: default; padding: 20px;">
+                    <h3 style="color: var(--accent); margin-bottom: 15px; margin-top: 0;">${group.name}</h3>
+                    
+                    <div class="group-container" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+                        
+                        <!-- Cột Trái: Bảng Xếp Hạng -->
+                        <div style="flex: 1 1 45%; min-width: 320px; overflow-x: auto;">
+                            <table class="custom-table" style="width: 100%; word-break: break-word;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">Team</th>
+                                        <th style="width: 50px; text-align: center;">W</th>
+                                        <th style="width: 50px; text-align: center;">L</th>
+                                        <th style="width: 50px; text-align: center;">Pts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
                 
                 let sortedTeams = group.teams.sort((a, b) => b.pts - a.pts);
                 sortedTeams.forEach(team => {
-                    groupsHtml += `<tr><td><strong>${team.name}</strong></td><td>${team.w}</td><td>${team.l}</td><td><strong style="color: var(--accent);">${team.pts}</strong></td></tr>`;
+                    groupsHtml += `
+                                    <tr>
+                                        <td style="font-weight: bold; word-break: break-word;">${team.name}</td>
+                                        <td style="text-align: center;">${team.w}</td>
+                                        <td style="text-align: center;">${team.l}</td>
+                                        <td style="text-align: center;"><strong style="color: var(--accent);">${team.pts}</strong></td>
+                                    </tr>`;
                 });
 
-                groupsHtml += `</tbody></table>
-                        <div class="match-list">
-                            <h4 style="margin-bottom: 10px;">History Matches</h4>`;
+                groupsHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Cột Phải: Lịch Thi Đấu -->
+                        <div class="match-list" style="flex: 1 1 45%; min-width: 320px; background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px;">
+                            <h4 style="margin: 0 0 15px 0;">History Matches</h4>
+                            <div style="max-height: 300px; overflow-y: auto; padding-right: 5px;">`;
                 
                 if (group.matches && group.matches.length > 0) {
                     group.matches.forEach(match => {
-                        groupsHtml += `<div class="match-row"><span class="match-team">${match.team1}</span><span class="match-score">${match.score1} - ${match.score2}</span><span class="match-team">${match.team2}</span></div>`;
+                        groupsHtml += `
+                                <div class="match-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 8px; margin-bottom: 5px; border-radius: 4px;">
+                                    <span class="match-team" style="flex: 1; text-align: right; word-break: break-word; font-size: 13px;">${match.team1}</span>
+                                    <span class="match-score" style="margin: 0 15px; font-weight: bold; color: var(--accent); font-size: 14px; min-width: 40px; text-align: center;">${match.score1} - ${match.score2}</span>
+                                    <span class="match-team" style="flex: 1; text-align: left; word-break: break-word; font-size: 13px;">${match.team2}</span>
+                                </div>`;
                     });
                 } else {
-                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted);">Chưa có trận đấu nào diễn ra.</p>`;
+                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted); margin: 0;">Chưa có trận đấu nào diễn ra.</p>`;
                 }
 
-                groupsHtml += `</div></div></div>`;
+                groupsHtml += `
+                            </div>
+                        </div>
+
+                    </div>
+                </div>`;
             });
 
             detailsBox.append(groupsHtml);
