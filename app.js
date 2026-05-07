@@ -118,14 +118,19 @@ function renderTournaments(data) {
         const isUpcoming = t.status === 'upcoming';
         const liveBadge = isLive ? `<span class="badge-live">LIVE</span>` : '';
         const upcomingBadge = isUpcoming ? `<span class="badge-upcoming">Upcoming</span>` : '';
+        
+        const bannerHtml = t.banner ? `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('${t.banner}') center/cover no-repeat; opacity: 0.25; z-index: -1;"></div>` : '';
+
         const html = `
-            <div class="card" onclick="viewTournament(${t.id})">
+            <div class="card" onclick="viewTournament(${t.id})" style="position: relative; overflow: hidden; z-index: 1;">
+                ${bannerHtml}
                 <div class="card-title">${t.name} ${liveBadge} ${upcomingBadge}</div>
                 <div class="card-info">
                     🕒 ${t.start_date || '?'} - ${t.end_date || '?'} | 👑 Host: ${t.host || 'Trống'}
                 </div>
             </div>
         `;
+        
         if (isLive) {
             $('#current-tournaments').append(html);
         } else if (isUpcoming) {
