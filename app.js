@@ -126,7 +126,7 @@ function renderTournaments(data) {
                 ${bannerHtml}
                 <div class="card-title">${t.name} ${liveBadge} ${upcomingBadge}</div>
                 <div class="card-info">
-                    🕒 ${t.start_date || '?'} - ${t.end_date || '?'} | 👑 Host: ${t.host || 'Trống'}
+                    🕒 ${t.start_date || '?'} - ${t.end_date || '?'} | 👑 Host: ${t.host || 'Chưa rõ'}
                 </div>
             </div>
         `;
@@ -155,9 +155,9 @@ function viewTournament(id) {
 
     $('#det-name').text(t.name);
     $('#det-date').text(`${t.start_date || '?'} tới ${t.end_date || '?'}`);
-    $('#det-host').text(t.host || 'Trống');
-    $('#det-sponsor').text(t.sponsor || 'Trống');
-    $('#det-version').text(t.version || 'Trống');
+    $('#det-host').text(t.host || 'Chưa rõ');
+    $('#det-sponsor').text(t.sponsor || 'Chưa rõ');
+    $('#det-version').text(t.version || 'Chưa rõ');
 
     let stagesData = [];
     if (t.formats && t.formats.trim() !== "") {
