@@ -312,7 +312,7 @@ window.openViewerStage = function(index) {
 
     } 
     else if (stage.format === 'Group Stage') {
-        let groupsHtml = `<h3 style="margin-bottom: 15px; color: var(--text-main);">Kết quả ${stage.name}</h3>`;
+        let groupsHtml = `<h3 style="margin-bottom: 15px; color: var(--text-main);">${stage.name} Results</h3>`;
 
         if (!stage.data || stage.data.length === 0) {
             detailsBox.append(groupsHtml + "<p style='color: var(--text-muted);'>Chưa có dữ liệu bảng đấu.</p>");
@@ -366,7 +366,7 @@ window.openViewerStage = function(index) {
                                 </div>`;
                     });
                 } else {
-                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted); margin: 0;">Chưa có trận đấu nào diễn ra.</p>`;
+                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted); margin: 0;">No matches have taken place yet.p>`;
                 }
 
                 groupsHtml += `
@@ -382,7 +382,7 @@ window.openViewerStage = function(index) {
     }
 
     if (!stage.replays || stage.replays.length === 0) {
-        replayBox.append('<p style="color: var(--text-muted); text-align: center; padding: 20px;">Chưa có video replay nào cho vòng đấu này.</p>');
+        replayBox.append('<p style="color: var(--text-muted); text-align: center; padding: 20px;">There is no replay for this round.</p>');
     } else {
         let replaysHtml = `<div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">`;
         
