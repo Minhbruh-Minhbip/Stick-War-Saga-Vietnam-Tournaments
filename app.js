@@ -10,7 +10,22 @@ $(document).ready(async function() {
 
     await fetchTournaments();
     setupSearch();
+    handleRouting();
 });
+
+window.addEventListener('popstate', function() {
+    handleRouting();
+});
+
+function handleRouting() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if (id) {
+        viewTournament(id, false);
+    } else {
+        goBack(false);
+    }
+}
 
 function checkAndRedirectInAppBrowser() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -149,7 +164,7 @@ function setupSearch() {
     });
 }
 
-function viewTournament(id) {
+function viewTournament(id, pushHistory = true) {
     const t = tournaments.find(x => x.id == id);
     if (!t) return;
 
@@ -178,6 +193,11 @@ function viewTournament(id) {
     $('#details-page').removeClass('hidden');
     
     switchTab('results');
+
+    if (pushHistory) {
+        const newUrl = window.location.pathname + "?id=" + id;
+        window.history.pushState({id: id}, '', newUrl);
+    }
 }
 
 function renderViewerGamers(gamers) {
@@ -430,9 +450,14 @@ window.switchViewerStageTab = function(tabName) {
     }
 }
 
-function goBack() {
+function goBack(pushHistory = true) {
     $('#details-page').addClass('hidden');
     $('#main-page').removeClass('hidden');
+
+    if (pushHistory) {
+        const newUrl = window.location.pathname;
+        window.history.pushState({}, '', newUrl);
+    }
 }
 
 function switchTab(tabId) {
