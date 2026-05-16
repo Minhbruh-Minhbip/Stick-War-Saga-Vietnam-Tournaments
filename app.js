@@ -213,13 +213,13 @@ function renderViewerGamers(gamers) {
         return;
     }
 
-    let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">`;
+    let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 15px;">`;
     
     gamers.forEach(g => {
         html += `
             <div class="card" style="border-left: 4px solid var(--accent); cursor: default; padding: 15px;">
-                <div style="font-weight: bold; font-size: 18px; color: var(--text-main);">${g.name}</div>
-                <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">🎮 ${g.desc || 'Đang cập nhật'}</div>
+                <div style="font-weight: bold; font-size: 18px; color: var(--text-main);">🎮${g.name}🎮</div>
+                <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px; white-space: pre-wrap; word-break: break-word;">${g.desc || 'Đang cập nhật'}</div>
             </div>
         `;
     });
