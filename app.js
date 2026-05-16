@@ -366,7 +366,7 @@ window.openViewerStage = function(index) {
                                 </div>`;
                     });
                 } else {
-                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted); margin: 0;">No matches have taken place yet.p>`;
+                    groupsHtml += `<p style="font-size: 13px; color: var(--text-muted); margin: 0;">No matches have taken place yet</.p>`;
                 }
 
                 groupsHtml += `
